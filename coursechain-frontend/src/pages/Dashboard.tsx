@@ -1,4 +1,3 @@
-import React from 'react';
 import { Plus, BookOpen, Users, DollarSign, TrendingUp, Settings, BarChart } from 'lucide-react';
 
 const Dashboard = () => {
