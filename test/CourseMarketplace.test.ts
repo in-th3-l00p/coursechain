@@ -1,7 +1,6 @@
 import { expect } from "chai";
 import hre from "hardhat";
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
-import { any } from "hardhat/internal/core/params/argumentTypes";
 
 describe("CourseMarketplace", function () {
   const INITIAL_PRICE = hre.ethers.parseEther("0.1");
@@ -55,7 +54,7 @@ describe("CourseMarketplace", function () {
 
     await expect(
       marketplace.connect(otherAccount).setPrice(newPrice)
-    ).to.be.revertedWith("You are not authorized to perform this action");
+    ).to.be.revertedWithCustomError(marketplace, "OwnableUnauthorizedAccount");
   });
 
   it("allow a user to purchase a course", async function () {

@@ -45,7 +45,7 @@ contract CourseMarketplace is Ownable, ReentrancyGuard {
     modifier onlyAdmin() {
         require(
             admins.contains(msg.sender) || 
-            owner() == msg.sender, UNAUTHORIZED
+            owner() == msg.sender, OwnableUnauthorizedAccount(msg.sender)
         );
         _;
     }
