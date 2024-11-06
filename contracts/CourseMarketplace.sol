@@ -6,8 +6,8 @@ import "./Course.sol";
 
 // Import OpenZeppelin Contracts
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title CourseMarketplace
@@ -24,7 +24,6 @@ contract CourseMarketplace is Ownable, ReentrancyGuard {
         address indexed buyer,
         address courseAddress,
         string title,
-        string description,
         uint256 timestamp
     );
     event PriceUpdated(uint256 newPrice);
@@ -35,31 +34,28 @@ contract CourseMarketplace is Ownable, ReentrancyGuard {
     event Received(address indexed sender, uint256 amount);
     event FallbackCalled(address indexed sender, uint256 amount, bytes data);
 
-    // State Variables
     uint256 private price; // Price in wei
-
-    // Admin management using EnumerableSet for efficient enumeration
     EnumerableSet.AddressSet private admins;
-
-    // Mapping from user address to their purchased Course contracts
     mapping(address => Course[]) private userCourses;
-
-    // Array to store all Course contracts
     Course[] private allCourses;
 
     /**
      * @dev Modifier to restrict functions to admins or the owner.
      */
     modifier onlyAdmin() {
-        require(admins.contains(msg.sender) || owner() == msg.sender, UNAUTHORIZED);
+        require(
+            admins.contains(msg.sender) || 
+            owner() == msg.sender, UNAUTHORIZED
+        );
         _;
     }
 
     /**
      * @dev Constructor sets the initial price.
+     * @param _owner Address of the owner.
      * @param _initialPrice Initial price of a course in wei.
      */
-    constructor(uint256 _initialPrice) {
+    constructor(address _owner, uint256 _initialPrice) Ownable(_owner) {
         require(_initialPrice > 0, "Initial price must be greater than zero");
         price = _initialPrice;
     }
@@ -128,13 +124,12 @@ contract CourseMarketplace is Ownable, ReentrancyGuard {
     /**
      * @dev Purchase a course by sending the required ETH. Deploys a new Course contract.
      * @param _title Title of the course.
-     * @param _description Description of the course.
      */
-    function purchaseCourse(string memory _title, string memory _description) external payable nonReentrant {
+    function purchaseCourse(string memory _title) external payable nonReentrant {
         require(msg.value >= price, "Insufficient ETH sent for course purchase");
 
         // Effects: Update state before external interactions
-        Course newCourse = new Course(msg.sender, _title, _description);
+        Course newCourse = new Course(msg.sender, _title);
         userCourses[msg.sender].push(newCourse);
         allCourses.push(newCourse); // Add to allCourses
 
@@ -142,7 +137,6 @@ contract CourseMarketplace is Ownable, ReentrancyGuard {
             msg.sender,
             address(newCourse),
             _title,
-            _description,
             block.timestamp
         );
 
