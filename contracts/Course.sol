@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 // Import OpenZeppelin's Ownable contract for ownership management
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "hardhat/console.sol";
 
 /**
  * @title Course
@@ -23,6 +24,7 @@ contract Course is Ownable {
         string memory _title
     ) Ownable(_owner) {
         require(_owner != address(0), "Invalid owner address");
+        require(bytes(_title).length > 0, "Title cannot be empty");
         title = _title;
     }
 

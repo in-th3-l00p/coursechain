@@ -121,4 +121,84 @@ describe("CourseMarketplace", function () {
       .to.emit(marketplace, "FallbackCalled")
       .withArgs(otherAccount.address, hre.ethers.parseEther("0.1"), "0x1234");
   });
+
+  it("return the list of admins", async function () {
+      const { marketplace, owner, admin } = await loadFixture(deployMarketplaceFixture);
+
+      await marketplace.connect(owner).addAdmin(admin.address);
+      const admins = await marketplace.getAdmins();
+
+      expect(admins).to.include(admin.address);
+    });
+
+  it("return user courses", async function () {
+    const { marketplace, buyer } = await loadFixture(deployMarketplaceFixture);
+    const title = "Blockchain 101";
+
+    await marketplace.connect(buyer).purchaseCourse(title, { value: INITIAL_PRICE });
+
+    const userCourses = await marketplace.getUserCourses(buyer.address);
+    expect(userCourses).to.have.lengthOf(1);
+  });
+
+  it("return all purchased courses", async function () {
+    const { marketplace, buyer } = await loadFixture(deployMarketplaceFixture);
+    const title1 = "Blockchain 101";
+    const title2 = "Ethereum Basics";
+
+    await marketplace.connect(buyer).purchaseCourse(title1, { value: INITIAL_PRICE });
+    await marketplace.connect(buyer).purchaseCourse(title2, { value: INITIAL_PRICE });
+
+    const allCourses = await marketplace.getAllCourses();
+    expect(allCourses).to.have.lengthOf(2);
+  });
+
+  it("return a batch of courses", async function () {
+    const { marketplace, buyer } = await loadFixture(deployMarketplaceFixture);
+    const title1 = "Blockchain 101";
+    const title2 = "Ethereum Basics";
+
+    await marketplace.connect(buyer).purchaseCourse(title1, { value: INITIAL_PRICE });
+    await marketplace.connect(buyer).purchaseCourse(title2, { value: INITIAL_PRICE });
+
+    const coursesBatch = await marketplace.getCourses(0, 2);
+    expect(coursesBatch).to.have.lengthOf(2);
+  });
+
+  it("revert when getting courses with invalid indices", async function () {
+    const { marketplace } = await loadFixture(deployMarketplaceFixture);
+
+    await expect(marketplace.getCourses(1, 0)).to.be.revertedWith("Start must be less than end");
+    await expect(marketplace.getCourses(0, 3)).to.be.revertedWith("End index out of bounds");
+  });
+
+  it("revert when adding a duplicate admin", async function () {
+    const { marketplace, owner, admin } = await loadFixture(deployMarketplaceFixture);
+
+    await marketplace.connect(owner).addAdmin(admin.address);
+
+    await expect(marketplace.connect(owner).addAdmin(admin.address))
+      .to.be.revertedWith("Address is already an admin");
+  });
+
+  it("revert when removing a non-existent admin", async function () {
+    const { marketplace, owner, admin } = await loadFixture(deployMarketplaceFixture);
+
+    await expect(marketplace.connect(owner).removeAdmin(admin.address))
+      .to.be.revertedWith("Address is not an admin");
+  });
+
+  it("enforce new price during course purchase", async function () {
+    const { marketplace, owner, admin, buyer } = await loadFixture(deployMarketplaceFixture);
+    const newPrice = hre.ethers.parseEther("0.2");
+
+    await marketplace.connect(owner).addAdmin(admin.address);
+    await marketplace.connect(admin).setPrice(newPrice);
+
+    await expect(marketplace.connect(buyer).purchaseCourse("New Course", { value: INITIAL_PRICE }))
+      .to.be.revertedWith("Insufficient ETH sent for course purchase");
+
+    await expect(marketplace.connect(buyer).purchaseCourse("New Course", { value: newPrice }))
+      .to.emit(marketplace, "CoursePurchased");
+  });
 });

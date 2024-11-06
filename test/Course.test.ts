@@ -56,4 +56,36 @@ describe("Course", function () {
       })
     ).to.be.revertedWith("Direct ETH transfers not allowed");
   });
+
+  it("revert on creating course with zero address as owner", async function () {
+    const Course = await hre.ethers.getContractFactory("Course");
+    await expect(
+      Course.deploy(hre.ethers.ZeroAddress, INITIAL_TITLE)
+    ).to.be.revertedWithCustomError(Course, "OwnableInvalidOwner");
+  });
+
+  it("keep the title unchanged if update fails", async function () {
+    const { course, owner } = await loadFixture(deployCourseFixture);
+
+    const newTitle = "New Title";
+    await course.connect(owner).setTitle(newTitle);
+    expect(await course.getTitle()).to.equal(newTitle);
+
+    // Attempt to set an empty title (this should revert)
+    await expect(course.connect(owner).setTitle("")).to.be.revertedWith("Title cannot be empty");
+
+    // Ensure the title is still the updated one
+    expect(await course.getTitle()).to.equal(newTitle);
+  });
+
+  it("revert when calling fallback function with value", async function () {
+    const { course, otherAccount } = await loadFixture(deployCourseFixture);
+
+    await expect(
+      otherAccount.sendTransaction({
+        to: await course.getAddress(),
+        value: hre.ethers.parseEther("1"),
+      })
+    ).to.be.revertedWith("Direct ETH transfers not allowed");
+  });
 });
