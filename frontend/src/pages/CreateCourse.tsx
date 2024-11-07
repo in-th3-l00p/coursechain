@@ -92,7 +92,7 @@ const CreateCourse = () => {
             <li>
               <div className="flex items-center">
                 <button
-                  onClick={() => navigate('/')}
+                  onClick={() => navigate('/dashboard')}
                   className="flex items-center text-gray-400 hover:text-white"
                 >
                   Dashboard

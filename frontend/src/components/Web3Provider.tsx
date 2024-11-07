@@ -4,6 +4,13 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import LoadingPage from './LoadingPage';
 
+export const wagmiConfig = createConfig({
+    chains: [hardhat],
+    transports: {
+        [hardhat.id]: http()
+    }
+})
+
 function LoadingState({ children }: {
     children: React.ReactNode
 }) {
@@ -20,12 +27,7 @@ export default function Web3Provider({ children }: {
     children: React.ReactNode;
 }) {
     return (
-        <WagmiProvider config={createConfig({
-            chains: [hardhat],
-            transports: {
-                [hardhat.id]: http()
-            }
-        })}>
+        <WagmiProvider config={wagmiConfig}>
             <QueryClientProvider client={new QueryClient()}>
                 <LoadingState>
                     {children}

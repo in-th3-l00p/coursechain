@@ -1,6 +1,13 @@
 import { Plus, BookOpen, Users, DollarSign, TrendingUp, Settings, BarChart } from 'lucide-react';
+import { useReadCoursesMarketplace } from "../wagmiGenerated";
+import LoadingPage from '../components/LoadingPage';
+import Course from '../components/dashboard/Course';
 
 const Dashboard = () => {
+  const { data: courses, isPending } = useReadCoursesMarketplace({
+    functionName: "getAllCourses"
+  });
+
   const stats = [
     { title: 'Total Students', value: '2,847', icon: <Users className="w-6 h-6" />, change: '+12.5%' },
     { title: 'Active Courses', value: '24', icon: <BookOpen className="w-6 h-6" />, change: '+4.3%' },
@@ -8,12 +15,14 @@ const Dashboard = () => {
     { title: 'Completion Rate', value: '84%', icon: <TrendingUp className="w-6 h-6" />, change: '+5.2%' },
   ];
 
-  const courses = [
-    { title: 'Web3 Development Fundamentals', students: 486, revenue: '23.4 ETH', progress: 75 },
-    { title: 'Smart Contract Security', students: 324, revenue: '18.2 ETH', progress: 60 },
-    { title: 'DeFi Architecture', students: 256, revenue: '15.8 ETH', progress: 45 },
-  ];
+  // const courses = [
+  //   { title: 'Web3 Development Fundamentals', students: 486, revenue: '23.4 ETH', progress: 75 },
+  //   { title: 'Smart Contract Security', students: 324, revenue: '18.2 ETH', progress: 60 },
+  //   { title: 'DeFi Architecture', students: 256, revenue: '15.8 ETH', progress: 45 },
+  // ];
 
+  if (isPending)
+    return <LoadingPage />
   return (
     <div className="min-h-screen pt-16 bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -54,30 +63,8 @@ const Dashboard = () => {
               <button className="text-sm text-indigo-400 hover:text-indigo-300">View All</button>
             </div>
             <div className="space-y-4">
-              {courses.map((course, index) => (
-                <div key={index} className="bg-gray-700/50 rounded-lg p-4">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="font-semibold mb-1">{course.title}</h3>
-                      <div className="flex items-center text-sm text-gray-400">
-                        <Users className="w-4 h-4 mr-1" />
-                        {course.students} students
-                        <span className="mx-2">•</span>
-                        <DollarSign className="w-4 h-4 mr-1" />
-                        {course.revenue}
-                      </div>
-                    </div>
-                    <button className="text-indigo-400 hover:text-indigo-300">
-                      <Settings className="w-5 h-5" />
-                    </button>
-                  </div>
-                  <div className="w-full bg-gray-600 rounded-full h-2">
-                    <div
-                      className="bg-indigo-500 rounded-full h-2"
-                      style={{ width: `${course.progress}%` }}
-                    />
-                  </div>
-                </div>
+              {courses?.map((course, index) => (
+                <Course key={index} address={course} />
               ))}
             </div>
           </div>
