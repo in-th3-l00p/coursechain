@@ -9,8 +9,12 @@ export default buildModule("CourseMarketplace", (m) => {
     const courseMarketplace = m.contract(
         "CourseMarketplace", 
         [m.getParameter("_owner", owner), m.getParameter("_initialPrice", INITIAL_PRICE)], 
-        { from: owner }
+        { from: owner, }
     );
+
+    m.call(courseMarketplace, "setPrice", [
+        m.getParameter("newPrice", ethers.parseEther("0.004"))
+    ]);
 
     return { courseMarketplace };
 });

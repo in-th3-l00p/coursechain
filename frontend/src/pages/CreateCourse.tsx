@@ -9,6 +9,14 @@ import {
   Settings,
 } from 'lucide-react';
 import { useEthRate } from '../hook/useEthRate';
+import { useReadCoursesMarketplaceGetPrice } from '../wagmiGenerated';
+import { formatEther } from 'viem';
+
+const showCourseCreationPrice = (courseCreationPrice: bigint | undefined): string => {
+  if (courseCreationPrice === undefined)
+    return 'loading...';
+  return formatEther(courseCreationPrice);
+}
 
 const CreateCourse = () => {
   const navigate = useNavigate();
@@ -21,13 +29,15 @@ const CreateCourse = () => {
   });
 
   const {
-    isLoading,
+    isLoading: ethRateLoading,
     error,
     calculateEthToEur,
   } = useEthRate();
 
-  // Fixed course creation fee in ETH
-  const COURSE_CREATION_FEE_ETH = 0.00446858;
+  const { data: courseCreationPrice, isPending: courseCreationPriceLoading } = useReadCoursesMarketplaceGetPrice();
+
+  // global loading variable
+  const loading = ethRateLoading || courseCreationPriceLoading;
 
   /**
    * Handles changes to form inputs.
@@ -176,9 +186,9 @@ const CreateCourse = () => {
             </div>
             {/* Display EUR Equivalent for Course Price */}
             <div className="mt-2 text-gray-400 text-sm">
-              {isLoading && <span>Fetching current ETH price...</span>}
+              {courseCreationPriceLoading && <span>Fetching current ETH price...</span>}
               {error && <span className="text-red-500">Error: {error}</span>}
-              {!isLoading && !error && formData.price && (
+              {!courseCreationPriceLoading && !error && formData.price && (
                 <span>≈ €{calculateEthToEur(parseFloat(formData.price))} EUR</span>
               )}
             </div>
@@ -189,18 +199,19 @@ const CreateCourse = () => {
             <h2 className="text-gray-300 text-sm font-medium mb-2">Course Creation Fee</h2>
             <div className="flex items-center">
               <DollarSign className="w-5 h-5 text-gray-400 mr-2" />
-              <span className="text-gray-400">Fixed Fee: {COURSE_CREATION_FEE_ETH} ETH</span>
+              <span className="text-gray-400">Fixed Fee: {showCourseCreationPrice(courseCreationPrice)} ETH</span>
             </div>
             <div className="mt-1 flex items-center">
               <DollarSign className="w-5 h-5 text-gray-400 mr-2" />
-              {isLoading && <span>Fetching fee in EUR...</span>}
+              {courseCreationPriceLoading && <span>Fetching fee in EUR...</span>}
               {error && <span className="text-red-500">Error: {error}</span>}
-              {!isLoading && !error && (
-                <span>≈ €{calculateEthToEur(COURSE_CREATION_FEE_ETH)} EUR</span>
+              {!courseCreationPriceLoading && !error && (
+                <span>≈ €{calculateEthToEur(Number.parseFloat(showCourseCreationPrice(courseCreationPrice)))} EUR</span>
               )}
             </div>
             <p className="mt-2 text-gray-400 text-sm">
-              A fixed fee of <strong>{COURSE_CREATION_FEE_ETH} ETH</strong> is required to create a course on the platform.
+              A fixed fee of <strong>{showCourseCreationPrice(courseCreationPrice)} ETH</strong> 
+              is required to create a course on the platform.
             </p>
           </div>
 
@@ -214,7 +225,7 @@ const CreateCourse = () => {
               className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-600 rounded"
             />
             <label htmlFor="confirmFee" className="ml-2 block text-gray-400 text-sm">
-              I acknowledge that creating a course costs <strong>{COURSE_CREATION_FEE_ETH} ETH</strong>.
+              I acknowledge that creating a course costs <strong>{showCourseCreationPrice(courseCreationPrice)} ETH</strong>.
             </label>
           </div>
 
@@ -223,6 +234,7 @@ const CreateCourse = () => {
             <button
               type="submit"
               className="flex items-center justify-center px-4 py-2 bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors text-white font-semibold disabled:opacity-50"
+              disabled={loading}
             >
               <Plus className="w-5 h-5 mr-2" />
               Create Course
