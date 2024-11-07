@@ -9,8 +9,9 @@ import {
   Settings,
 } from 'lucide-react';
 import { useEthRate } from '../hook/useEthRate';
-import { useReadCoursesMarketplaceGetPrice } from '../wagmiGenerated';
+import { useReadCoursesMarketplaceGetPrice, useWriteCoursesMarketplacePurchaseCourse } from '../wagmiGenerated';
 import { formatEther } from 'viem';
+import LoadingPage from '../components/LoadingPage';
 
 const showCourseCreationPrice = (courseCreationPrice: bigint | undefined): string => {
   if (courseCreationPrice === undefined)
@@ -28,16 +29,26 @@ const CreateCourse = () => {
     image: null as File | null,
   });
 
+  // state related to pricing
   const {
     isLoading: ethRateLoading,
     error,
     calculateEthToEur,
   } = useEthRate();
+  const { 
+    data: courseCreationPrice, 
+    isPending: courseCreationPriceLoading 
+  } = useReadCoursesMarketplaceGetPrice();
 
-  const { data: courseCreationPrice, isPending: courseCreationPriceLoading } = useReadCoursesMarketplaceGetPrice();
+  // writing the course
+  const {
+    writeContractAsync,
+    isPending: writeContractLoading
+  } = useWriteCoursesMarketplacePurchaseCourse();
+  const [transactionLoading, setTransactionLoading] = useState(false);
 
   // global loading variable
-  const loading = ethRateLoading || courseCreationPriceLoading;
+  const loading = ethRateLoading || courseCreationPriceLoading || writeContractLoading || transactionLoading;
 
   /**
    * Handles changes to form inputs.
@@ -56,12 +67,18 @@ const CreateCourse = () => {
    */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Implement your form submission logic here
-    console.log(formData);
-    // Optionally navigate to another page after submission
-    // navigate('/courses');
+    setTransactionLoading(true);
+    writeContractAsync({
+      args: [formData.title],
+      value: courseCreationPrice
+    })
+      .then(result => navigate(`/courses/${result}`))
+      .catch(error => console.error(error))
+      .finally(() => setTransactionLoading(false));
   };
 
+  if (transactionLoading)
+    return <LoadingPage />
   return (
     <div className="min-h-screen pt-16 bg-gray-900">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
