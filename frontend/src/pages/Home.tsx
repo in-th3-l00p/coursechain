@@ -1,10 +1,9 @@
-import React from 'react';
-import { ArrowRight, Sparkles, Shield, Zap, Users, LayoutDashboard } from 'lucide-react';
+import { ArrowRight, Shield, Zap, Users, LayoutDashboard } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useWeb3 } from '../context/Web3Context';
+import { useAccount } from 'wagmi';
 
 const Home = () => {
-  const { isConnected } = useWeb3();
+  const { isConnected } = useAccount();
 
   return (
     <div className="relative">

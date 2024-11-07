@@ -1,10 +1,10 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
-import { useWeb3 } from '../context/Web3Context';
-import { Rocket, Book, Wallet, LayoutDashboard } from 'lucide-react';
+import { Rocket, LayoutDashboard } from 'lucide-react';
+import { useAccount } from 'wagmi';
+import ConnectButton from './ConnectButton';
 
 const Navbar = () => {
-  const { account, connect, disconnect, isConnected } = useWeb3();
+  const { isConnected } = useAccount();
 
   return (
     <nav className="bg-gray-800/50 backdrop-blur-sm border-b border-gray-700 fixed w-full z-50">
@@ -31,13 +31,7 @@ const Navbar = () => {
                 Dashboard
               </Link>
             )}
-            <button
-              onClick={isConnected ? disconnect : connect}
-              className="flex items-center px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 transition-colors"
-            >
-              <Wallet className="w-4 h-4 mr-2" />
-              {isConnected ? `${account?.slice(0, 6)}...${account?.slice(-4)}` : 'Connect Wallet'}
-            </button>
+            <ConnectButton /> 
           </div>
         </div>
       </div>
