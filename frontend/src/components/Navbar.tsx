@@ -13,7 +13,7 @@ const Navbar = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
               <Rocket className="h-8 w-8 text-indigo-500" />
-              <span className="text-xl font-bold">CourseForge</span>
+              <span className="text-xl font-bold">CourseChain</span>
             </Link>
             <div className="ml-10 flex items-baseline space-x-4">
               <Link to="/" className="text-gray-300 hover:text-white px-3 py-2 rounded-md">

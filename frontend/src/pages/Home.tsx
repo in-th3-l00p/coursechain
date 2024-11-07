@@ -39,7 +39,7 @@ const Home = () => {
 
       {/* Features Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-        <h2 className="text-4xl font-bold text-center mb-16">Why Choose CourseForge?</h2>
+        <h2 className="text-4xl font-bold text-center mb-16">Why Choose CourseChain?</h2>
         <div className="grid md:grid-cols-3 gap-8">
           {[
             {
@@ -74,7 +74,7 @@ const Home = () => {
           <div className="relative p-12 text-center">
             <h2 className="text-4xl font-bold mb-6">Ready to Start Building?</h2>
             <p className="text-xl mb-8 max-w-2xl mx-auto">
-              Join thousands of creators who are already using CourseForge to build their online education empire.
+              Join thousands of creators who are already using CourseChain to build their online education empire.
             </p>
             <button className="px-8 py-4 bg-white text-indigo-600 rounded-lg hover:bg-gray-100 transition-colors font-semibold">
               Start Creating Today
