@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+// components/CreateCourse.tsx
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   BookOpen,
@@ -7,6 +8,7 @@ import {
   ChevronRight,
   Settings,
 } from 'lucide-react';
+import { useEthRate } from '../hook/useEthRate';
 
 const CreateCourse = () => {
   const navigate = useNavigate();
@@ -15,72 +17,39 @@ const CreateCourse = () => {
     description: '',
     category: '',
     price: '',
-    image: null,
+    image: null as File | null,
   });
 
-  const [ethToEurRate, setEthToEurRate] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const {
+    isLoading,
+    error,
+    calculateEthToEur,
+  } = useEthRate();
 
   // Fixed course creation fee in ETH
   const COURSE_CREATION_FEE_ETH = 0.00446858;
 
-  // Fetch ETH to EUR exchange rate on component mount
-  useEffect(() => {
-    const fetchEthToEurRate = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const response = await fetch(
-          'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=eur'
-        );
-        if (!response.ok) {
-          throw new Error('Failed to fetch ETH price');
-        }
-        const data = await response.json();
-        setEthToEurRate(data.ethereum.eur);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchEthToEurRate();
-  }, []);
-
-  const handleChange = () => {
-    const { name, value, files } = e.target;
-    if (name === 'image') {
-      setFormData({ ...formData, image: files[0] });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
+  /**
+   * Handles changes to form inputs.
+   * @param e React change event
+   */
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = () => {
+  /**
+   * Handles form submission.
+   * @param e React form event
+   */
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission logic here
+    // Implement your form submission logic here
     console.log(formData);
     // Optionally navigate to another page after submission
     // navigate('/courses');
-  };
-
-  // Calculate EUR equivalent for course price
-  const calculateCoursePriceEur = () => {
-    const ethPrice = parseFloat(formData.price);
-    if (!isNaN(ethPrice) && ethToEurRate) {
-      return (ethPrice * ethToEurRate).toFixed(2);
-    }
-    return '0.00';
-  };
-
-  // Calculate EUR equivalent for creation fee
-  const calculateFeeEur = () => {
-    if (ethToEurRate) {
-      return (COURSE_CREATION_FEE_ETH * ethToEurRate).toFixed(2);
-    }
-    return '0.00';
   };
 
   return (
@@ -152,7 +121,7 @@ const CreateCourse = () => {
               value={formData.description}
               onChange={handleChange}
               required
-              rows="4"
+              rows={4}
               className="w-full bg-gray-700 text-white rounded-lg p-4 focus:outline-none placeholder-gray-500"
               placeholder="Enter course description"
             ></textarea>
@@ -200,7 +169,7 @@ const CreateCourse = () => {
                 onChange={handleChange}
                 required
                 min="0"
-                step="0.01"
+                step="0.000001"
                 className="bg-transparent flex-1 focus:outline-none text-white placeholder-gray-500"
                 placeholder="Enter course price in ETH"
               />
@@ -209,8 +178,8 @@ const CreateCourse = () => {
             <div className="mt-2 text-gray-400 text-sm">
               {isLoading && <span>Fetching current ETH price...</span>}
               {error && <span className="text-red-500">Error: {error}</span>}
-              {!isLoading && !error && (
-                <span>≈ €{calculateCoursePriceEur()} EUR</span>
+              {!isLoading && !error && formData.price && (
+                <span>≈ €{calculateEthToEur(parseFloat(formData.price))} EUR</span>
               )}
             </div>
           </div>
@@ -227,7 +196,7 @@ const CreateCourse = () => {
               {isLoading && <span>Fetching fee in EUR...</span>}
               {error && <span className="text-red-500">Error: {error}</span>}
               {!isLoading && !error && (
-                <span>≈ €{calculateFeeEur()} EUR</span>
+                <span>≈ €{calculateEthToEur(COURSE_CREATION_FEE_ETH)} EUR</span>
               )}
             </div>
             <p className="mt-2 text-gray-400 text-sm">
