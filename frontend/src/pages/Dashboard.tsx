@@ -1,4 +1,4 @@
-import { Plus, BookOpen, Users, DollarSign, TrendingUp, Settings, BarChart } from 'lucide-react';
+import { Plus, BookOpen, Users, DollarSign, TrendingUp, BarChart } from 'lucide-react';
 import { useReadCoursesMarketplace } from "../wagmiGenerated";
 import LoadingPage from '../components/LoadingPage';
 import Course from '../components/dashboard/Course';

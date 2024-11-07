@@ -39,7 +39,7 @@ const CreateCourse = () => {
         }
         const data = await response.json();
         setEthToEurRate(data.ethereum.eur);
-      } catch (err) {
+      } catch (err: any) {
         setError(err.message);
       } finally {
         setIsLoading(false);
@@ -49,7 +49,7 @@ const CreateCourse = () => {
     fetchEthToEurRate();
   }, []);
 
-  const handleChange = (e) => {
+  const handleChange = () => {
     const { name, value, files } = e.target;
     if (name === 'image') {
       setFormData({ ...formData, image: files[0] });
@@ -58,7 +58,7 @@ const CreateCourse = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = () => {
     e.preventDefault();
     // Handle form submission logic here
     console.log(formData);
