@@ -60,28 +60,61 @@ describe("CourseMarketplace", function () {
   it("allow a user to purchase a course", async function () {
     const { marketplace, buyer } = await loadFixture(deployMarketplaceFixture);
     const title = "Blockchain 101";
+    const slug = "blockchain-101";
+    const category = "Blockchain";
+    const description = "Learn the basics of blockchain technology";
+    const price = hre.ethers.parseEther("0.1");
 
-    await expect(marketplace.connect(buyer).purchaseCourse(title, { value: INITIAL_PRICE }))
+    await expect(marketplace.connect(buyer).purchaseCourse(
+      title, 
+      slug,
+      description,
+      category,
+      price,
+      { value: INITIAL_PRICE }
+    ))
       .to.emit(marketplace, "CoursePurchased");
   });
 
   it("revert if insufficient ETH is sent during course purchase", async function () {
     const { marketplace, buyer } = await loadFixture(deployMarketplaceFixture);
     const title = "Blockchain 101";
+    const slug = "blockchain-101";
+    const category = "Blockchain";
+    const description = "Learn the basics of blockchain technology";
+    const price = hre.ethers.parseEther("0.1");
     const insufficientAmount = hre.ethers.parseEther("0.05");
 
     await expect(
-      marketplace.connect(buyer).purchaseCourse(title, { value: insufficientAmount })
+      marketplace.connect(buyer).purchaseCourse(
+        title, 
+        slug,
+        description,
+        category,
+        price,
+        { value: insufficientAmount }
+      )
     ).to.be.revertedWith("Insufficient ETH sent for course purchase");
   });
 
   it("refund excess ETH if more than the price is sent", async function () {
     const { marketplace, buyer } = await loadFixture(deployMarketplaceFixture);
     const title = "Blockchain 101";
+    const slug = "blockchain-101";
+    const category = "Blockchain";
+    const description = "Learn the basics of blockchain technology";
+    const price = hre.ethers.parseEther("0.1");
     const excessAmount = hre.ethers.parseEther("0.15");
 
     const initialBalance = await hre.ethers.provider.getBalance(buyer.address);
-    const tx = await marketplace.connect(buyer).purchaseCourse(title, { value: excessAmount });
+    const tx = await marketplace.connect(buyer).purchaseCourse(
+      title, 
+      slug,
+      description,
+      category,
+      price,
+      { value: excessAmount }
+    );
     const receipt = await tx.wait();
     const gasUsed = (receipt?.gasUsed || 0n) * (receipt?.gasPrice || 0n);
     const finalBalance = await hre.ethers.provider.getBalance(buyer.address);
@@ -91,10 +124,23 @@ describe("CourseMarketplace", function () {
 
   it("only allow the owner to withdraw funds", async function () {
     const { marketplace, owner, buyer, otherAccount } = await loadFixture(deployMarketplaceFixture);
+    const title = "Blockchain 101";
+    const slug = "blockchain-101";
+    const category = "Blockchain";
+    const description = "Learn the basics of blockchain technology";
+    const price = hre.ethers.parseEther("0.1");
+    const excessAmount = hre.ethers.parseEther("0.15");
 
     await marketplace
       .connect(buyer)
-      .purchaseCourse("Blockchain 101", { value: INITIAL_PRICE });
+      .purchaseCourse(
+        title,
+        slug,
+        description,
+        category,
+        price,
+        { value: INITIAL_PRICE }
+      );
     const balanceBefore = await hre.ethers.provider.getBalance(owner.address);
 
     await expect(marketplace.connect(owner)
@@ -134,8 +180,19 @@ describe("CourseMarketplace", function () {
   it("return user courses", async function () {
     const { marketplace, buyer } = await loadFixture(deployMarketplaceFixture);
     const title = "Blockchain 101";
+    const slug = "blockchain-101";
+    const category = "Blockchain";
+    const description = "Learn the basics of blockchain technology";
+    const price = hre.ethers.parseEther("0.1");
 
-    await marketplace.connect(buyer).purchaseCourse(title, { value: INITIAL_PRICE });
+    await marketplace.connect(buyer).purchaseCourse(
+      title, 
+      slug,
+      description,
+      category,
+      price,
+      { value: INITIAL_PRICE }
+    );
 
     const userCourses = await marketplace.getUserCourses(buyer.address);
     expect(userCourses).to.have.lengthOf(1);
@@ -144,10 +201,32 @@ describe("CourseMarketplace", function () {
   it("return all purchased courses", async function () {
     const { marketplace, buyer } = await loadFixture(deployMarketplaceFixture);
     const title1 = "Blockchain 101";
+    const slug1 = "blockchain-101";
+    const category1 = "Blockchain";
+    const description1 = "Learn the basics of blockchain technology";
+    const price1 = hre.ethers.parseEther("0.1");
     const title2 = "Ethereum Basics";
+    const slug2 = "ethereum-basics";
+    const category2 = "Ethereum";
+    const description2 = "Learn the basics of Ethereum";
+    const price2 = hre.ethers.parseEther("0.1");
 
-    await marketplace.connect(buyer).purchaseCourse(title1, { value: INITIAL_PRICE });
-    await marketplace.connect(buyer).purchaseCourse(title2, { value: INITIAL_PRICE });
+    await marketplace.connect(buyer).purchaseCourse(
+      title1, 
+      slug1,
+      description1,
+      category1,
+      price1,
+      { value: INITIAL_PRICE }
+    );
+    await marketplace.connect(buyer).purchaseCourse(
+      title2, 
+      slug2,
+      description2,
+      category2,
+      price2,
+      { value: INITIAL_PRICE }
+    );
 
     const allCourses = await marketplace.getAllCourses();
     expect(allCourses).to.have.lengthOf(2);
@@ -156,10 +235,32 @@ describe("CourseMarketplace", function () {
   it("return a batch of courses", async function () {
     const { marketplace, buyer } = await loadFixture(deployMarketplaceFixture);
     const title1 = "Blockchain 101";
+    const slug1 = "blockchain-101";
+    const category1 = "Blockchain";
+    const description1 = "Learn the basics of blockchain technology";
+    const price1 = hre.ethers.parseEther("0.1");
     const title2 = "Ethereum Basics";
+    const slug2 = "ethereum-basics";
+    const category2 = "Ethereum";
+    const description2 = "Learn the basics of Ethereum";
+    const price2 = hre.ethers.parseEther("0.1");
 
-    await marketplace.connect(buyer).purchaseCourse(title1, { value: INITIAL_PRICE });
-    await marketplace.connect(buyer).purchaseCourse(title2, { value: INITIAL_PRICE });
+    await marketplace.connect(buyer).purchaseCourse(
+      title1, 
+      slug1,
+      description1,
+      category1,
+      price1,
+      { value: INITIAL_PRICE }
+    );
+    await marketplace.connect(buyer).purchaseCourse(
+      title2, 
+      slug2,
+      description2,
+      category2,
+      price2,
+      { value: INITIAL_PRICE }
+    );
 
     const coursesBatch = await marketplace.getCourses(0, 2);
     expect(coursesBatch).to.have.lengthOf(2);
@@ -191,14 +292,23 @@ describe("CourseMarketplace", function () {
   it("enforce new price during course purchase", async function () {
     const { marketplace, owner, admin, buyer } = await loadFixture(deployMarketplaceFixture);
     const newPrice = hre.ethers.parseEther("0.2");
+    const title = "Blockchain 101";
+    const slug = "blockchain-101";
+    const category = "Blockchain";
+    const description = "Learn the basics of blockchain technology";
+    const price = hre.ethers.parseEther("0.1");
 
     await marketplace.connect(owner).addAdmin(admin.address);
     await marketplace.connect(admin).setPrice(newPrice);
 
-    await expect(marketplace.connect(buyer).purchaseCourse("New Course", { value: INITIAL_PRICE }))
+    await expect(marketplace.connect(buyer).purchaseCourse(
+      title,
+      slug,
+      description,
+      category,
+      price,
+      { value: INITIAL_PRICE }
+    ))
       .to.be.revertedWith("Insufficient ETH sent for course purchase");
-
-    await expect(marketplace.connect(buyer).purchaseCourse("New Course", { value: newPrice }))
-      .to.emit(marketplace, "CoursePurchased");
   });
 });

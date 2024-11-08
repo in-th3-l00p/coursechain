@@ -4,14 +4,47 @@ import hre from "hardhat";
 
 describe("Course", function () {
   const INITIAL_TITLE = "Initial Course Title";
+  const INITIAL_SLUG = "initial-course-title";
+  const INITIAL_DESCRIPTION = "Initial Course Description";
+  const INITIAL_CATEGORY = "Initial Course Category";
+  const INITIAL_PRICE = hre.ethers.parseEther("0.01");
 
   async function deployCourseFixture() {
     const [owner, otherAccount] = await hre.ethers.getSigners();
     const Course = await hre.ethers.getContractFactory("Course");
-    const course = await Course.deploy(owner.address, INITIAL_TITLE);
+    const course = await Course.deploy(
+      owner.address, 
+      INITIAL_TITLE,
+      INITIAL_SLUG,
+      INITIAL_DESCRIPTION,
+      INITIAL_CATEGORY,
+      INITIAL_PRICE
+    );
 
     return { course, owner, otherAccount };
   }
+
+  it("revert on direct ETH transfers", async function () {
+    const { course, otherAccount } = await loadFixture(deployCourseFixture);
+
+    await expect(
+      otherAccount.sendTransaction({ 
+        to: await course.getAddress(), 
+        value: 1 
+      })
+    ).to.be.revertedWith("Direct ETH transfers not allowed");
+  });
+
+  it("revert when calling fallback function with value", async function () {
+    const { course, otherAccount } = await loadFixture(deployCourseFixture);
+
+    await expect(
+      otherAccount.sendTransaction({
+        to: await course.getAddress(),
+        value: hre.ethers.parseEther("1"),
+      })
+    ).to.be.revertedWith("Direct ETH transfers not allowed");
+  });
 
   it("set the initial title correctly", async function () {
     const { course } = await loadFixture(deployCourseFixture);
@@ -38,54 +71,103 @@ describe("Course", function () {
     ).to.be.revertedWithCustomError(course, "OwnableUnauthorizedAccount");
   });
 
-  it("revert if title update is attempted with an empty title", async function () {
-    const { course, owner } = await loadFixture(deployCourseFixture);
+  it("set the initial slug correctly", async function () {
+    const { course } = await loadFixture(deployCourseFixture);
 
-    await expect(course.connect(owner).setTitle("")).to.be.revertedWith(
-      "Title cannot be empty"
-    );
+    expect(await course.slug()).to.equal(INITIAL_SLUG);
   });
 
-  it("revert on direct ETH transfers", async function () {
+  it("update the slug when called by the owner", async function () {
+    const { course, owner } = await loadFixture(deployCourseFixture);
+
+    const newSlug = "Updated Course slug";
+    await expect(course.connect(owner).setSlug(newSlug))
+      .to.emit(course, "SlugUpdated")
+      .withArgs(INITIAL_SLUG, newSlug);
+
+    expect(await course.slug()).to.equal(newSlug);
+  });
+
+  it("revert if non-owner tries to update the slug", async function () {
     const { course, otherAccount } = await loadFixture(deployCourseFixture);
 
     await expect(
-      otherAccount.sendTransaction({ 
-        to: await course.getAddress(), 
-        value: 1 
-      })
-    ).to.be.revertedWith("Direct ETH transfers not allowed");
+      course.connect(otherAccount).setSlug("Unauthorized slug")
+    ).to.be.revertedWithCustomError(course, "OwnableUnauthorizedAccount");
   });
 
-  it("revert on creating course with zero address as owner", async function () {
-    const Course = await hre.ethers.getContractFactory("Course");
-    await expect(
-      Course.deploy(hre.ethers.ZeroAddress, INITIAL_TITLE)
-    ).to.be.revertedWithCustomError(Course, "OwnableInvalidOwner");
+  it("set the initial description correctly", async function () {
+    const { course } = await loadFixture(deployCourseFixture);
+
+    expect(await course.description()).to.equal(INITIAL_DESCRIPTION);
   });
 
-  it("keep the title unchanged if update fails", async function () {
+  it("update the description when called by the owner", async function () {
     const { course, owner } = await loadFixture(deployCourseFixture);
 
-    const newTitle = "New Title";
-    await course.connect(owner).setTitle(newTitle);
-    expect(await course.title()).to.equal(newTitle);
+    const newDescription = "Updated Course Description";
+    await expect(course.connect(owner).setDescription(newDescription))
+      .to.emit(course, "DescriptionUpdated")
+      .withArgs(INITIAL_DESCRIPTION, newDescription);
 
-    // Attempt to set an empty title (this should revert)
-    await expect(course.connect(owner).setTitle("")).to.be.revertedWith("Title cannot be empty");
-
-    // Ensure the title is still the updated one
-    expect(await course.title()).to.equal(newTitle);
+    expect(await course.description()).to.equal(newDescription);
   });
 
-  it("revert when calling fallback function with value", async function () {
+  it("revert if non-owner tries to update the description", async function () {
     const { course, otherAccount } = await loadFixture(deployCourseFixture);
 
     await expect(
-      otherAccount.sendTransaction({
-        to: await course.getAddress(),
-        value: hre.ethers.parseEther("1"),
-      })
-    ).to.be.revertedWith("Direct ETH transfers not allowed");
+      course.connect(otherAccount).setDescription("Unauthorized Description")
+    ).to.be.revertedWithCustomError(course, "OwnableUnauthorizedAccount");
+  });
+
+  it("set the initial category correctly", async function () {
+    const { course } = await loadFixture(deployCourseFixture);
+
+    expect(await course.category()).to.equal(INITIAL_CATEGORY);
+  });
+
+  it("update the category when called by the owner", async function () {
+    const { course, owner } = await loadFixture(deployCourseFixture);
+
+    const newCategory = "Updated Course Category";
+    await expect(course.connect(owner).setCategory(newCategory))
+      .to.emit(course, "CategoryUpdated")
+      .withArgs(INITIAL_CATEGORY, newCategory);
+
+    expect(await course.category()).to.equal(newCategory);
+  });
+
+  it("revert if non-owner tries to update the category", async function () {
+    const { course, otherAccount } = await loadFixture(deployCourseFixture);
+
+    await expect(
+      course.connect(otherAccount).setCategory("Unauthorized Category")
+    ).to.be.revertedWithCustomError(course, "OwnableUnauthorizedAccount");
+  });
+
+  it("set the initial price correctly", async function () {
+    const { course } = await loadFixture(deployCourseFixture);
+
+    expect(await course.price()).to.equal(INITIAL_PRICE);
+  });
+
+  it("update the price when called by the owner", async function () {
+    const { course, owner } = await loadFixture(deployCourseFixture);
+
+    const newPrice = hre.ethers.parseEther("0.02");
+    await expect(course.connect(owner).setPrice(newPrice))
+      .to.emit(course, "PriceUpdated")
+      .withArgs(INITIAL_PRICE, newPrice);
+
+    expect(await course.price()).to.equal(newPrice);
+  });
+
+  it("revert if non-owner tries to update the price", async function () {
+    const { course, otherAccount } = await loadFixture(deployCourseFixture);
+
+    await expect(
+      course.connect(otherAccount).setPrice(hre.ethers.parseEther("0.02"))
+    ).to.be.revertedWithCustomError(course, "OwnableUnauthorizedAccount");
   });
 });

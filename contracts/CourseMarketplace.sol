@@ -45,11 +45,24 @@ contract CourseMarketplace is Marketplace {
      * @dev Purchase a course by sending the required ETH. Deploys a new Course contract.
      * @param _title Title of the course.
      */
-    function purchaseCourse(string memory _title) external payable nonReentrant {
+    function purchaseCourse(
+        string memory _title,
+        string memory _slug,
+        string memory _description,
+        string memory _category,
+        uint256 _price
+    ) external payable nonReentrant {
         require(msg.value >= price, "Insufficient ETH sent for course purchase");
 
         // Effects: Update state before external interactions
-        Course newCourse = new Course(msg.sender, _title);
+        Course newCourse = new Course(
+            msg.sender, 
+            _title, 
+            _slug, 
+            _description, 
+            _category, 
+            _price
+        );
         userCourses[msg.sender].push(newCourse);
         allCourses.push(newCourse); // Add to allCourses
 

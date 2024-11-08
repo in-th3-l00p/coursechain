@@ -9,7 +9,10 @@ import {
   Settings,
 } from 'lucide-react';
 import { useEthRate } from '../hook/useEthRate';
-import { useReadCoursesMarketplaceGetPrice, useWriteCoursesMarketplacePurchaseCourse } from '../wagmiGenerated';
+import {
+  useReadCoursesMarketplacePrice,
+  useWriteCoursesMarketplacePurchaseCourse
+} from '../wagmiGenerated';
 import { formatEther } from 'viem';
 import LoadingPage from '../components/LoadingPage';
 
@@ -38,7 +41,7 @@ const CreateCourse = () => {
   const { 
     data: courseCreationPrice, 
     isPending: courseCreationPriceLoading 
-  } = useReadCoursesMarketplaceGetPrice();
+  } = useReadCoursesMarketplacePrice();
 
   // writing the course
   const {

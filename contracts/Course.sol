@@ -11,8 +11,16 @@ import "hardhat/console.sol";
  */
 contract Course is Ownable {
     string public title;
+    string public slug;
+    string public description;
+    string public category;
+    uint256 public price;
 
     event TitleUpdated(string oldTitle, string newTitle);
+    event SlugUpdated(string oldSlug, string newSlug);
+    event DescriptionUpdated(string oldDescription, string newDescription);
+    event CategoryUpdated(string oldCategory, string newCategory);
+    event PriceUpdated(uint256 oldPrice, uint256 newPrice);
 
     /**
      * @dev Initializes the contract setting the deployer as the initial owner and setting course metadata.
@@ -21,11 +29,18 @@ contract Course is Ownable {
      */
     constructor(
         address _owner,
-        string memory _title
+        string memory _title,
+        string memory _slug,
+        string memory _description,
+        string memory _category,
+        uint256 _price
     ) Ownable(_owner) {
         require(_owner != address(0), "Invalid owner address");
-        require(bytes(_title).length > 0, "Title cannot be empty");
         title = _title;
+        slug = _slug;
+        description = _description;
+        category = _category;
+        price = _price;
     }
 
     /**
@@ -37,6 +52,47 @@ contract Course is Ownable {
         string memory oldTitle = title;
         title = _newTitle;
         emit TitleUpdated(oldTitle, _newTitle);
+    }
+
+    /**
+     * @dev Updates the slug of the course. Only the owner can call this function.
+     * @param _slug New slug for the course.
+     */
+    function setSlug(string memory _slug) external onlyOwner {
+        require(bytes(_slug).length > 0, "Slug cannot be empty");
+        string memory oldSlug = slug;
+        slug = _slug;
+        emit SlugUpdated(oldSlug, _slug);
+    }
+
+    /**
+     * @dev Updates the description of the course. Only the owner can call this function.
+     * @param _description New description for the course.
+     */
+    function setDescription(string memory _description) external onlyOwner {
+        string memory oldDescription = description;
+        description = _description;
+        emit DescriptionUpdated(oldDescription, _description);
+    }
+
+    /**
+     * @dev Updates the category of the course. Only the owner can call this function.
+     * @param _category New category for the course.
+     */
+    function setCategory(string memory _category) external onlyOwner {
+        string memory oldCategory = category;
+        category = _category;
+        emit CategoryUpdated(oldCategory, _category);
+    }
+
+    /**
+     * @dev Updates the price of the course. Only the owner can call this function.
+     * @param _price New price for the course.
+     */
+    function setPrice(uint256 _price) external onlyOwner {
+        uint256 oldPrice = price;
+        price = _price;
+        emit PriceUpdated(oldPrice, _price);
     }
 
     /**
