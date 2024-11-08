@@ -16,7 +16,7 @@ describe("Course", function () {
   it("set the initial title correctly", async function () {
     const { course } = await loadFixture(deployCourseFixture);
 
-    expect(await course.getTitle()).to.equal(INITIAL_TITLE);
+    expect(await course.title()).to.equal(INITIAL_TITLE);
   });
 
   it("update the title when called by the owner", async function () {
@@ -27,7 +27,7 @@ describe("Course", function () {
       .to.emit(course, "TitleUpdated")
       .withArgs(INITIAL_TITLE, newTitle);
 
-    expect(await course.getTitle()).to.equal(newTitle);
+    expect(await course.title()).to.equal(newTitle);
   });
 
   it("revert if non-owner tries to update the title", async function () {
@@ -69,13 +69,13 @@ describe("Course", function () {
 
     const newTitle = "New Title";
     await course.connect(owner).setTitle(newTitle);
-    expect(await course.getTitle()).to.equal(newTitle);
+    expect(await course.title()).to.equal(newTitle);
 
     // Attempt to set an empty title (this should revert)
     await expect(course.connect(owner).setTitle("")).to.be.revertedWith("Title cannot be empty");
 
     // Ensure the title is still the updated one
-    expect(await course.getTitle()).to.equal(newTitle);
+    expect(await course.title()).to.equal(newTitle);
   });
 
   it("revert when calling fallback function with value", async function () {

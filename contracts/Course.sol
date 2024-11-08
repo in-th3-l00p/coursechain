@@ -10,7 +10,7 @@ import "hardhat/console.sol";
  * @dev Represents an individual course with metadata and ownership control.
  */
 contract Course is Ownable {
-    string private title;
+    string public title;
 
     event TitleUpdated(string oldTitle, string newTitle);
 
@@ -26,14 +26,6 @@ contract Course is Ownable {
         require(_owner != address(0), "Invalid owner address");
         require(bytes(_title).length > 0, "Title cannot be empty");
         title = _title;
-    }
-
-    /**
-     * @dev Returns the title of the course.
-     * @return Title as a string.
-     */
-    function getTitle() external view returns (string memory) {
-        return title;
     }
 
     /**

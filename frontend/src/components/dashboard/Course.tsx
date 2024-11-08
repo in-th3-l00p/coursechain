@@ -6,7 +6,7 @@ export default function Course({ address }: { address: string }) {
     const { data: course, isPending, error } = useReadContract({
         address: address as `0x${string}`,
         abi: courseAbi,
-        functionName: "getTitle"
+        functionName: "title"
     })
     console.log(address, course, isPending);
 
