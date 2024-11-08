@@ -16,7 +16,7 @@ describe("CourseMarketplace", function () {
   it("set the initial price correctly", async function () {
     const { marketplace } = await loadFixture(deployMarketplaceFixture);
 
-    expect(await marketplace.getPrice()).to.equal(INITIAL_PRICE);
+    expect(await marketplace.price()).to.equal(INITIAL_PRICE);
   });
 
   it("add and remove an admin", async function () {
@@ -45,7 +45,7 @@ describe("CourseMarketplace", function () {
       .to.emit(marketplace, "PriceUpdated")
       .withArgs(newPrice);
 
-    expect(await marketplace.getPrice()).to.equal(newPrice);
+    expect(await marketplace.price()).to.equal(newPrice);
   });
 
   it("revert if a non-admin tries to update the price", async function () {

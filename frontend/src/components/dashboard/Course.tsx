@@ -1,12 +1,14 @@
 import { useReadContract } from "wagmi";
 import courseAbi from "../../abi/courseAbi";
+import { DollarSign, Settings, Users } from "lucide-react";
 
 export default function Course({ address }: { address: string }) {
     const { data: course, isPending, error } = useReadContract({
         address: address as `0x${string}`,
-        abi: courseAbi
+        abi: courseAbi,
+        functionName: "getTitle"
     })
-    console.log(course);
+    console.log(address, course, isPending);
 
     if (error)
         return (

@@ -72,7 +72,7 @@ const CreateCourse = () => {
       args: [formData.title],
       value: courseCreationPrice
     })
-      .then(result => navigate(`/courses/${result}`))
+      .then(result => navigate(`/dashboard?courseCreated`))
       .catch(error => console.error(error))
       .finally(() => setTransactionLoading(false));
   };
