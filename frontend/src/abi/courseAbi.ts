@@ -190,6 +190,19 @@ const courseAbi = [
     },
     {
         "inputs": [],
+        "name": "createdAt",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
         "name": "description",
         "outputs": [
             {
@@ -230,6 +243,11 @@ const courseAbi = [
                     {
                         "internalType": "uint256",
                         "name": "price",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "createdAt",
                         "type": "uint256"
                     }
                 ],

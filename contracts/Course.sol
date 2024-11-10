@@ -10,11 +10,15 @@ import "hardhat/console.sol";
  * @dev Represents an individual course with metadata and ownership control.
  */
 contract Course is Ownable {
+    // Course metadata
     string public title;
     string public slug;
     string public description;
     string public category;
     uint256 public price;
+
+    // Timestamp of course creation
+    uint256 public createdAt;
 
     struct CourseDto {
         string title;
@@ -22,8 +26,10 @@ contract Course is Ownable {
         string description;
         string category;
         uint256 price;
+        uint256 createdAt;
     }
 
+    // Events for updating course metadata
     event TitleUpdated(string oldTitle, string newTitle);
     event SlugUpdated(string oldSlug, string newSlug);
     event DescriptionUpdated(string oldDescription, string newDescription);
@@ -34,6 +40,10 @@ contract Course is Ownable {
      * @dev Initializes the contract setting the deployer as the initial owner and setting course metadata.
      * @param _owner Address of the course owner.
      * @param _title Title of the course.
+     * @param _slug Slug identifier for the course.
+     * @param _description Description of the course.
+     * @param _category Category under which the course falls.
+     * @param _price Price of the course in wei.
      */
     constructor(
         address _owner,
@@ -49,6 +59,7 @@ contract Course is Ownable {
         description = _description;
         category = _category;
         price = _price;
+        createdAt = block.timestamp; // Set the creation timestamp
     }
 
     /**
@@ -95,7 +106,7 @@ contract Course is Ownable {
 
     /**
      * @dev Updates the price of the course. Only the owner can call this function.
-     * @param _price New price for the course.
+     * @param _price New price for the course in wei.
      */
     function setPrice(uint256 _price) external onlyOwner {
         uint256 oldPrice = price;
@@ -104,11 +115,11 @@ contract Course is Ownable {
     }
 
     /**
-     * @dev Returns the course data.
-     * @return Course data.
+     * @dev Returns the course metadata
+     * @return CourseDto struct containing course metadata
      */
     function get() public view returns (CourseDto memory) {
-        return CourseDto(title, slug, description, category, price);
+        return CourseDto(title, slug, description, category, price, createdAt);
     }
 
     /**

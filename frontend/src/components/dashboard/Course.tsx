@@ -3,27 +3,16 @@ import courseAbi from "../../abi/courseAbi";
 import { DollarSign, Settings } from "lucide-react";
 import { formatEther } from "viem";
 
-interface CourseDto {
-    title: string;
-    slug: string;
-    description: string;
-    category: string;
-    price: bigint; // Assuming price is returned as uint256
-}
-
 interface CourseProps {
     address: string;
 }
 
 export default function Course({ address }: CourseProps) {
-    const { data, isLoading, error } = useReadContract({
+    const { data: course, isLoading, error } = useReadContract({
         address: address as `0x${string}`,
         abi: courseAbi,
         functionName: "get",
     });
-
-    // Type assertion to CourseDto
-    const course = data as CourseDto | undefined;
 
     if (error)
         return (

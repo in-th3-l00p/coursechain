@@ -13,7 +13,7 @@ describe("Course", function () {
     const [owner, otherAccount] = await hre.ethers.getSigners();
     const Course = await hre.ethers.getContractFactory("Course");
     const course = await Course.deploy(
-      owner.address, 
+      owner.address,
       INITIAL_TITLE,
       INITIAL_SLUG,
       INITIAL_DESCRIPTION,
@@ -28,9 +28,9 @@ describe("Course", function () {
     const { course, otherAccount } = await loadFixture(deployCourseFixture);
 
     await expect(
-      otherAccount.sendTransaction({ 
-        to: await course.getAddress(), 
-        value: 1 
+      otherAccount.sendTransaction({
+        to: await course.getAddress(),
+        value: 1,
       })
     ).to.be.revertedWith("Direct ETH transfers not allowed");
   });
@@ -173,13 +173,26 @@ describe("Course", function () {
 
   it("returns the correct course data using the get function", async function () {
     const { course } = await loadFixture(deployCourseFixture);
-  
+
     const courseData = await course.get();
-  
+
     expect(courseData.title).to.equal(INITIAL_TITLE);
     expect(courseData.slug).to.equal(INITIAL_SLUG);
     expect(courseData.description).to.equal(INITIAL_DESCRIPTION);
     expect(courseData.category).to.equal(INITIAL_CATEGORY);
     expect(courseData.price).to.equal(INITIAL_PRICE);
+  });
+
+  it("sets the createdAt timestamp correctly", async function () {
+    const { course } = await loadFixture(deployCourseFixture);
+
+    const courseCreatedAt = await course.createdAt();
+
+    const deployBlock = await hre.ethers.provider.getBlock(
+      await hre.ethers.provider.getBlockNumber()
+    );
+    const deployTimestamp = deployBlock?.timestamp;
+
+    expect(courseCreatedAt).to.equal(deployTimestamp);
   });
 });
