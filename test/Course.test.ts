@@ -170,4 +170,16 @@ describe("Course", function () {
       course.connect(otherAccount).setPrice(hre.ethers.parseEther("0.02"))
     ).to.be.revertedWithCustomError(course, "OwnableUnauthorizedAccount");
   });
+
+  it("returns the correct course data using the get function", async function () {
+    const { course } = await loadFixture(deployCourseFixture);
+  
+    const courseData = await course.get();
+  
+    expect(courseData.title).to.equal(INITIAL_TITLE);
+    expect(courseData.slug).to.equal(INITIAL_SLUG);
+    expect(courseData.description).to.equal(INITIAL_DESCRIPTION);
+    expect(courseData.category).to.equal(INITIAL_CATEGORY);
+    expect(courseData.price).to.equal(INITIAL_PRICE);
+  });
 });

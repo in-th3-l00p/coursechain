@@ -16,6 +16,14 @@ contract Course is Ownable {
     string public category;
     uint256 public price;
 
+    struct CourseDto {
+        string title;
+        string slug;
+        string description;
+        string category;
+        uint256 price;
+    }
+
     event TitleUpdated(string oldTitle, string newTitle);
     event SlugUpdated(string oldSlug, string newSlug);
     event DescriptionUpdated(string oldDescription, string newDescription);
@@ -93,6 +101,14 @@ contract Course is Ownable {
         uint256 oldPrice = price;
         price = _price;
         emit PriceUpdated(oldPrice, _price);
+    }
+
+    /**
+     * @dev Returns the course data.
+     * @return Course data.
+     */
+    function get() public view returns (CourseDto memory) {
+        return CourseDto(title, slug, description, category, price);
     }
 
     /**
