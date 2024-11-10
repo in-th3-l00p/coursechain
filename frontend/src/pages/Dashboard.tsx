@@ -85,7 +85,10 @@ const Dashboard = () => {
                     <div className="lg:col-span-2 bg-gray-800 rounded-xl p-6">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-semibold">Active Courses</h2>
-                            <button className="text-sm text-indigo-400 hover:text-indigo-300">View All</button>
+                            <a
+                                className="text-sm text-indigo-400 hover:text-indigo-300"
+                                href={"/courses"}
+                            >View All</a>
                         </div>
                         <div className="space-y-4">
                             {courses?.map((course, index) => (
