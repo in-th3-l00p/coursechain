@@ -1,4 +1,3 @@
-// components/CreateCourse.tsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -13,7 +12,7 @@ import {
   useReadCoursesMarketplacePrice,
   useWriteCoursesMarketplacePurchaseCourse
 } from '../wagmiGenerated';
-import { formatEther } from 'viem';
+import { formatEther, parseEther } from 'viem';
 import LoadingPage from '../components/LoadingPage';
 
 const showCourseCreationPrice = (courseCreationPrice: bigint | undefined): string => {
@@ -26,6 +25,7 @@ const CreateCourse = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: '',
+    slug: '', // Add slug field
     description: '',
     category: '',
     price: '',
@@ -72,10 +72,16 @@ const CreateCourse = () => {
     e.preventDefault();
     setTransactionLoading(true);
     writeContractAsync({
-      args: [formData.title],
+      args: [
+        formData.title, 
+        formData.slug,
+        formData.description,
+        formData.category,
+        parseEther(formData.price)
+      ],
       value: courseCreationPrice
     })
-      .then(result => navigate(`/dashboard?courseCreated`))
+      .then(() => navigate(`/dashboard?courseCreated`))
       .catch(error => console.error(error))
       .finally(() => setTransactionLoading(false));
   };
@@ -133,6 +139,28 @@ const CreateCourse = () => {
                 required
                 className="bg-transparent flex-1 focus:outline-none text-white placeholder-gray-500"
                 placeholder="Enter course title"
+              />
+            </div>
+          </div>
+
+          {/* Slug */}
+          <div className="mb-6">
+            <label
+              htmlFor="slug"
+              className="block text-gray-400 text-sm font-medium mb-2"
+            >
+              Slug
+            </label>
+            <div className="flex items-center bg-gray-700 rounded-lg px-4 py-2">
+              <input
+                type="text"
+                id="slug"
+                name="slug"
+                value={formData.slug}
+                onChange={handleChange}
+                required
+                className="bg-transparent flex-1 focus:outline-none text-white placeholder-gray-500"
+                placeholder="Enter course slug"
               />
             </div>
           </div>
@@ -236,16 +264,18 @@ const CreateCourse = () => {
           </div>
 
           {/* Confirmation Checkbox */}
-          <div className="mb-6 flex items-center">
+          <div className="mb-6">
             <input
               type="checkbox"
-              id="confirmFee"
-              name="confirmFee"
+              id="confirm"
               required
-              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-600 rounded"
+              className="mr-2"
             />
-            <label htmlFor="confirmFee" className="ml-2 block text-gray-400 text-sm">
-              I acknowledge that creating a course costs <strong>{showCourseCreationPrice(courseCreationPrice)} ETH</strong>.
+            <label
+              htmlFor="confirm"
+              className="text-gray-400 text-sm"
+            >
+              I confirm that all information provided is accurate and complies with the terms and conditions.
             </label>
           </div>
 
