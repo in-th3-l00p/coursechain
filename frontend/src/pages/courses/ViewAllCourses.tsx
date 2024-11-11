@@ -1,10 +1,10 @@
-import {useReadCoursesMarketplace} from "../wagmiGenerated";
-import LoadingPage from '../components/LoadingPage';
-import Course from '../components/dashboard/Course';
+import {useReadCoursesMarketplace} from "../../wagmiGenerated.ts";
+import LoadingPage from '../../components/LoadingPage.tsx';
+import Course from '../../components/dashboard/Course.tsx';
 import {usePublicClient} from "wagmi";
 import {PublicClient} from "viem";
 import {useEffect, useState} from "react";
-import courseAbi from "../abi/courseAbi.ts";
+import courseAbi from "../../abi/courseAbi.ts";
 import {ChevronRight, Plus} from "lucide-react";
 import {useNavigate} from "react-router-dom";
 

@@ -3,11 +3,12 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Documentation from './pages/Documentation';
 import Dashboard from './pages/Dashboard';
-import CreateCourse from "./pages/CreateCourse.tsx";
+import CreateCourse from "./pages/courses/CreateCourse.tsx";
 import ProtectedRoute from './components/ProtectedRoute.tsx';
 import Web3Provider from './components/Web3Provider.tsx';
-import ViewAllCourses from "./pages/ViewAllCourses.tsx";
-import Course from "./pages/Course.tsx";
+import ViewAllCourses from "./pages/courses/ViewAllCourses.tsx";
+import Course from "./pages/courses/Course.tsx";
+import EditCourse from "./pages/courses/EditCourse.tsx";
 
 function App() {
     return (

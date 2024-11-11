@@ -12,7 +12,7 @@ import {
   DollarSign,
   Plus,
 } from 'lucide-react';
-import LoadingPage from '../components/LoadingPage';
+import LoadingPage from '../../components/LoadingPage.tsx';
 
 interface ICourse {
   title: string;
@@ -140,13 +140,23 @@ const CourseDetail = () => {
             <h1 className="text-3xl font-bold">{course.title}</h1>
           )}
           {isOwner && (
-            <button
-              onClick={isEditing ? handleSaveChanges : handleEditToggle}
-              className="flex items-center px-4 py-2 bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors"
-            >
-              {isEditing ? <Save className="w-5 h-5 mr-2" /> : <Edit className="w-5 h-5 mr-2" />}
-              {isEditing ? 'Save Changes' : 'Edit Course'}
-            </button>
+            <div className={"flex items-center gap-4"}>
+              {isEditing && (
+                <button
+                  onClick={handleEditToggle}
+                  className={"text-sm text-gray-400 hover:text-white"}
+                >
+                  Cancel
+                </button>
+              )}
+              <button
+                onClick={isEditing ? handleSaveChanges : handleEditToggle}
+                className="flex items-center px-4 py-2 bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors"
+              >
+                {isEditing ? <Save className="w-5 h-5 mr-2" /> : <Edit className="w-5 h-5 mr-2" />}
+                {isEditing ? 'Save Changes' : 'Edit Course'}
+              </button>
+            </div>
           )}
         </div>
 

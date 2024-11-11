@@ -7,13 +7,13 @@ import {
     ChevronRight,
     Settings,
 } from 'lucide-react';
-import {useEthRate} from '../hook/useEthRate';
+import {useEthRate} from '../../hook/useEthRate.ts';
 import {
     useReadCoursesMarketplacePrice,
     useWriteCoursesMarketplacePurchaseCourse
-} from '../wagmiGenerated';
+} from '../../wagmiGenerated.ts';
 import {formatEther, parseEther} from 'viem';
-import LoadingPage from '../components/LoadingPage';
+import LoadingPage from '../../components/LoadingPage.tsx';
 
 const showCourseCreationPrice = (courseCreationPrice: bigint | undefined): string => {
     if (courseCreationPrice === undefined)
