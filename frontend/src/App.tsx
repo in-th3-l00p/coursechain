@@ -7,6 +7,7 @@ import CreateCourse from "./pages/CreateCourse.tsx";
 import ProtectedRoute from './components/ProtectedRoute.tsx';
 import Web3Provider from './components/Web3Provider.tsx';
 import ViewAllCourses from "./pages/ViewAllCourses.tsx";
+import Course from "./pages/Course.tsx";
 
 function App() {
     return (
@@ -32,6 +33,11 @@ function App() {
                                 <ViewAllCourses/>
                             </ProtectedRoute>
                         }/>
+                        <Route path={"/courses/:slug"} element={
+                            <ProtectedRoute>
+                                <Course />
+                            </ProtectedRoute>
+                        } />
                     </Routes>
                 </div>
             </BrowserRouter>

@@ -79,9 +79,12 @@ export default function Course({ address }: CourseProps) {
                 </div>
 
                 {/* Settings Button */}
-                <button className="text-indigo-400 hover:text-indigo-300 p-1">
+                <a
+                  href={`/courses/${course.slug}`}
+                  className="text-indigo-400 hover:text-indigo-300 p-1"
+                >
                     <Settings className="w-5 h-5" />
-                </button>
+                </a>
             </div>
         </div>
     );
