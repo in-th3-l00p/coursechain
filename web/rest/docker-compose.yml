@@ -1,0 +1,15 @@
+services:
+  lesson-storage:
+    build: 
+      context: ./lesson-storage
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./lesson-storage:/usr/src/app
+    networks:
+      - rest
+
+networks:
+  rest:
+    driver: bridge
